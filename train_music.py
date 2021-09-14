@@ -11,8 +11,12 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import ModelCheckpoint
 import h5py
 import pickle
-
-
+'''
+This file uses midi (song) files to train a LSTM model for music generation.
+You'll need to input the midi files on the command line and give the index of the instrument
+you want to make predictions with from the mid file. Otherwise, it will use defaults. 
+'''
+# --------------------------------------------------------------------------------------------
 ''' 
 input:  list of file names
 output: a list of strings where chords are a grouping of numerical notes, 
@@ -33,7 +37,6 @@ def file_to_note_str(melody_pos, files):
         try:
         	notes_to_parse = parts.parts[melody_pos].recurse()
         except Exception as e:
-        	print('')
         	print('bad index for the midi file instrument part, exiting...\n', e)
         	exit()
         for elem in notes_to_parse:
@@ -48,7 +51,7 @@ def file_to_note_str(melody_pos, files):
         pickle.dump(notes, f)
     return notes
 
-
+# --------------------------------------------------------------------------------------------
 ''' prepare the input sequences and corresponding output for the rnn '''
 def prep_sequences(notes, sequence_length = 50):
     # pitchnames holds all the different notes/chords in a set
@@ -77,7 +80,7 @@ def prep_sequences(notes, sequence_length = 50):
     print('number of notes/chords\n', n_vocab)
     return input, output, n_vocab
 
-
+# --------------------------------------------------------------------------------------------
 ''' prepare the model ''' 
 def create_model(input, n_vocab):
     model = Sequential()
@@ -93,7 +96,7 @@ def create_model(input, n_vocab):
     model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
     return model 
 
-
+# --------------------------------------------------------------------------------------------
 ''' 
 train the model based on the data and output checkpoints that you can monitor/input to make 
 predictions along the way 
@@ -104,7 +107,7 @@ def train(model, input, output, epochs=50, batch_size=64):
     callbacks_list = [checkpoint]
     model.fit(input, output, epochs=50, batch_size=64, callbacks=callbacks_list)
 
-
+# --------------------------------------------------------------------------------------------
 ''' whole thang '''
 def train_rnn(melody_pos = 2, files = glob.glob("bass_mids/*.MID")):
     notes = file_to_note_str(melody_pos, files)
@@ -112,7 +115,7 @@ def train_rnn(melody_pos = 2, files = glob.glob("bass_mids/*.MID")):
     model = create_model(input, n_vocab)
     train(model, input, output)
 
-
+# --------------------------------------------------------------------------------------------
 if __name__ == '__main__':
 	# try to handle some input, and bad input...
 	inp = input('provide regular expression for where midi/mid files are, i.e. "music/*.mid", \nor filepaths separated by commas; \notherwise, to set the default as "bass_mids/*.MID", press enter\n')
@@ -122,14 +125,14 @@ if __name__ == '__main__':
 				melody_pos= int(input('provide index position of the melodies in the midi files, default is 2\n'))
 				break
 			except ValueError:
-				print('not a valid number, try again')
+				print('not a valid number, try again\n')
 		train_rnn(melody_pos, fps)	
 	else:
 		if inp == '':
 			print('running default\n')
 			train_rnn()
 		else:
-			print('bad file paths')
+			print('bad file paths\n')
 
 
 

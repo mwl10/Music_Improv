@@ -7,7 +7,12 @@ from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Activation
 import pickle
-
+# --------------------------------------------------------------------------------------------
+'''
+This file contains the code to output a newly generated midi file (a song) from the trained LSTM model 
+all you need to input is the weights file when it prompts on the CL, otherwise it will use the default.
+'''
+# --------------------------------------------------------------------------------------------
 """ prepare the prediction model w/ the weights loaded """
 def create_model(input, n_vocab, weights):
 	model = Sequential()
@@ -22,15 +27,16 @@ def create_model(input, n_vocab, weights):
 	model.add(Activation('softmax'))
 	model.load_weights(weights)
 	return model 
-	
-""" outputs the notes associated with a randomly indexed prediction from the sequence """
+
+# --------------------------------------------------------------------------------------------	
+""" outputs the notes as strings in a list starting w/ a randomly indexed sequence from the input """
 def create_notes(input, model, n_vocab, pitchnames):
 	start = np.random.randint(0, len(input) -1)
 	int_to_note = dict((number, note) for number, note in enumerate(pitchnames))
 	pattern = input[start]
 	pred_output = []
 	for note_index in range(500):
-		# make it 1,50,1 instead of 50,1
+		# make it 1,length of the sequence (los),1 instead of los,1
 		pred_input = np.reshape(pattern, (1,len(pattern), 1))
         # normalize input
 		pred_input = pred_input / float(n_vocab)
@@ -46,7 +52,8 @@ def create_notes(input, model, n_vocab, pitchnames):
 		pattern = pattern[1:len(pattern)]
 	return pred_output
 
-""" writes the midi file to ./output/test_out.mid """
+# --------------------------------------------------------------------------------------------
+""" translates the notes to a midi stream & writes the midi to ./output/test_out.mid """
 def create_midi(pred_output):
 	# translate chords/notes
 	offset = 0
@@ -74,6 +81,7 @@ def create_midi(pred_output):
 	midi_stream = stream.Stream(output_notes)
 	midi_stream.write('midi', fp='output/test_out.mid')
 
+# --------------------------------------------------------------------------------------------
 """ put it all together """
 def predict(weights = 'weight_checkpoints/music/weights-improvement-09-1.0100.hdf5'):
 	# need notes
@@ -89,6 +97,7 @@ def predict(weights = 'weight_checkpoints/music/weights-improvement-09-1.0100.hd
 	pred_output = create_notes(input, model, n_vocab, pitchnames)
 	create_midi(pred_output)
 
+# --------------------------------------------------------------------------------------------
 if __name__ == '__main__':
 	if (weights := input('weights file? \notherwise press enter to use default\n')):
 		predict(weights)
@@ -96,15 +105,4 @@ if __name__ == '__main__':
 		predict()
 
 	
-
-
-
-
-
-
-
-
-
-
-
 
