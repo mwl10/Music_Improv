@@ -1,5 +1,4 @@
 # Music_Improv
-Using an LSTM rnn to make music!
 
 ### train_music.py
 This file uses midi (song) files to train a LSTM model for music generation.
