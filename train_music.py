@@ -84,15 +84,18 @@ def prep_sequences(notes, sequence_length = 50):
 ''' prepare the model ''' 
 def create_model(input, n_vocab):
     model = Sequential()
-    model.add(LSTM(256, input_shape=(input.shape[1], input.shape[2]), return_sequences=True))
+    model.add(LSTM(512, input_shape=(input.shape[1], input.shape[2]), recurrent_dropout=0.3, return_sequences=True))
+    model.add(LSTM(512, return_sequences=True, recurrent_dropout=0.3,))
+    model.add(LSTM(512))
+    model.add(BatchNorm())
     model.add(Dropout(0.3))
-    model.add(LSTM(512, return_sequences=True))
-    model.add(Dropout(0.3))
-    model.add(LSTM(256))
     model.add(Dense(256))
+    model.add(Activation('relu'))
+    model.add(BatchNorm())
     model.add(Dropout(0.3))
     model.add(Dense(n_vocab))
     model.add(Activation('softmax'))
+    #opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, decay=0.01)
     model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
     return model 
 

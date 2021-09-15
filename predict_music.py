@@ -6,6 +6,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Activation
+from tensorflow.keras.layers import BatchNormalization as BatchNorm
 import pickle
 
 # --------------------------------------------------------------------------------------------
@@ -15,19 +16,21 @@ all you need to input is the weights file when it prompts on the CL, otherwise i
 '''
 # --------------------------------------------------------------------------------------------
 """ prepare the prediction model w/ the weights loaded """
-def create_model(input, n_vocab, weights):
+def create_model(input, n_vocab, weights): 
 	model = Sequential()
-	model.add(LSTM(256, input_shape=(input.shape[1], input.shape[2]), return_sequences=True))
+	model.add(LSTM(512, input_shape=(input.shape[1], input.shape[2]), recurrent_dropout=0.3, return_sequences=True))
+	model.add(LSTM(512, return_sequences=True, recurrent_dropout=0.3,))
+	model.add(LSTM(512))
+	model.add(BatchNorm())
 	model.add(Dropout(0.3))
-	model.add(LSTM(512, return_sequences=True))
-	model.add(Dropout(0.3))
-	model.add(LSTM(256))
 	model.add(Dense(256))
+	model.add(Activation('relu'))
+	model.add(BatchNorm())
 	model.add(Dropout(0.3))
 	model.add(Dense(n_vocab))
 	model.add(Activation('softmax'))
-	model.load_weights(weights)
-	return model 
+	model.load_weights("weights.hdf5")
+	return model
 
 # --------------------------------------------------------------------------------------------	
 """ outputs the notes as strings in a list starting w/ a randomly indexed sequence from the input """
@@ -91,8 +94,8 @@ def predict(weights = 'weights.hdf5'):
 
 	pitchnames = sorted(set(notes))
 
-	input, output, n_vocab = prep_sequences(notes, sequence_length = 50)
-
+	input, output, n_vocab = prep_sequences(notes, sequence_length = 30)
+	print(input, n_vocab, weights)
 	model = create_model(input, n_vocab, weights)
 
 	pred_output = create_notes(input, model, n_vocab, pitchnames)
