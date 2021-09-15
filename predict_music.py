@@ -95,7 +95,6 @@ def predict(weights = 'weights.hdf5'):
 	pitchnames = sorted(set(notes))
 
 	input, output, n_vocab = prep_sequences(notes, sequence_length = 30)
-	print(input, n_vocab, weights)
 	model = create_model(input, n_vocab, weights)
 
 	pred_output = create_notes(input, model, n_vocab, pitchnames)
@@ -105,8 +104,10 @@ def predict(weights = 'weights.hdf5'):
 if __name__ == '__main__':
 	if (weights := input('weights file? \notherwise press enter to use default\n')):
 		predict(weights)
+		print('\nmusic file written to output/test_out.mid\n')
 	else:
 		predict()
+		print('\nmusic file written to output/test_out.mid\n')
 
 	
 
