@@ -53,7 +53,7 @@ def file_to_note_str(melody_pos, files):
 
 # --------------------------------------------------------------------------------------------
 ''' prepare the input sequences and corresponding output for the rnn '''
-def prep_sequences(notes, sequence_length = 50):
+def prep_sequences(notes, sequence_length = 30):
     # pitchnames holds all the different notes/chords in a set
     pitchnames = sorted(set(notes))
     n_vocab = len(pitchnames)
