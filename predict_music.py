@@ -7,6 +7,7 @@ from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Activation
 import pickle
+
 # --------------------------------------------------------------------------------------------
 '''
 This file contains the code to output a newly generated midi file (a song) from the trained LSTM model 
@@ -83,7 +84,7 @@ def create_midi(pred_output):
 
 # --------------------------------------------------------------------------------------------
 """ put it all together """
-def predict(weights = 'weight_checkpoints/music/weights-improvement-09-1.0100.hdf5'):
+def predict(weights = 'weights.hdf5'):
 	# need notes
 	with open('data/notes.pickle', 'rb') as f:
 		notes = pickle.load(f)
