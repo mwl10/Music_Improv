@@ -9,5 +9,3 @@ you want to make predictions with from the mid file. Otherwise, it will use defa
 This file contains the code to output a newly generated midi file (a song) from the trained LSTM model.
 All you need to input is the weights file when it prompts on the CL, otherwise it will use a default.
 
-
-next is lyric generation ...
